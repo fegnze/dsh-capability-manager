@@ -34,9 +34,10 @@ jobs:
         with:
           node-version: '24'
           registry-url: https://registry.npmjs.org
-      - run: npm install --global npm@11.11.0
+      - run: npm install --global npm@11.21.1 --ignore-scripts
+      - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm test
-      - run: for f in src/*.js src/*.mjs; do node --check "$f"; done
+      - run: for f in src/*.js src/*.mjs; do [ -f "$f" ] || continue; node --check "$f"; done
       - name: Check package payload
         run: npm pack --dry-run --ignore-scripts
       - name: Publish with OIDC provenance
