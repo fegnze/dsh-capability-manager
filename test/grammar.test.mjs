@@ -1,0 +1,4 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {validateRaw} from '../src/skills/grammar.mjs';
+const raw='---\r\nname: example\r\ndescription: Test\r\n# keep comment\r\ncustom: unknown\r\ndisable-model-invocation: yes\r\nuser-invocable: false\r\n---\r\n Body \r\n';
+test('raw grammar validates metadata without modifying any source byte',()=>{const meta=validateRaw(raw);assert.equal(meta.name,'example');assert.deepEqual(meta.invocation,{modelInvocable:false,userInvocable:false});assert.ok(raw.includes('# keep comment\r\n'));});
+test('invalid frontmatter, duplicate keys and invalid booleans fail closed',()=>{for(const value of ['body',raw.replace('yes','perhaps'),raw.replace('name: example','name: ../bad'),raw.replace('description: Test','description: []'),raw.replace('custom: unknown','name: other')])assert.throws(()=>validateRaw(value));});

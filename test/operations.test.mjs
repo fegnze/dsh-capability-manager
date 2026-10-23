@@ -1,0 +1,13 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {createOperations} from '../src/skills/operations.mjs';
+const skill='---\nname: example\ndescription: Test\ncustom: keep\n---\nBody\n';
+function fixture(){let text=skill,version='v1';const writes=[];const fs={lstat:async()=>({type:'directory'}),resolve:async p=>({displayPath:p}),contains:()=>true,stat:async()=>({type:'file',version,size:text.length}),readText:async()=>text,writeText:async(t,raw,expected)=>{assert.equal(expected.version,version);writes.push({t,raw,expected});text=raw;version='v2';return {version};}};const store={inventory:async()=>[{object:'example.md',kind:'file',readOnly:false}],recovery:async()=>[]};return {ops:createOperations({fs,store,roots:[{id:'user',path:'/owned/skills',trusted:true}]}),writes,change(){version='external';}};}
+test('edit preview preserves raw bytes and commits through native version intent only once',async()=>{const f=fixture();const raw=skill.replace('Body','Changed');const p=await f.ops.preview({operation:'edit',rootId:'user',path:'example.md',raw,version:'v1'});await f.ops.commit({previewId:p.previewId});assert.equal(f.writes[0].raw,raw);assert.deepEqual(f.writes[0].expected,{kind:'replaceIfVersion',version:'v1'});await assert.rejects(f.ops.commit({previewId:p.previewId}),{code:'PREVIEW_EXPIRED'});});
+test('purge必须显式确认且复用store预览及提交，不直接删除文件',async()=>{
+  const calls=[];const store={previewPurge:async args=>{calls.push(['preview',args]);return {id:'store-preview',restorableInPlugin:false};},purge:async args=>{calls.push(['purge',args]);return {status:'trashed'};}};
+  const ops=createOperations({store,fs:{},roots:[{id:'user',path:'/owned/skills',trusted:true}]});
+  const preview=await ops.preview({operation:'purge',rootId:'user',recoveryId:'record'});
+  await assert.rejects(ops.commit({previewId:preview.previewId}),{code:'CONFIRM_REQUIRED'});
+  const result=await ops.commit({previewId:preview.previewId,confirm:true});assert.equal(result.result.status,'trashed');
+  assert.deepEqual(calls[1],['purge',{previewId:'store-preview',authorization:{owner:true}}]);
+});
+test('stale edits, implicit name changes, unauthorized roots and escaping paths fail before writes',async()=>{const f=fixture();await assert.rejects(f.ops.preview({operation:'edit',rootId:'user',path:'example.md',raw:skill.replace('name: example','name: other'),version:'v1'}),{code:'NAME_CHANGE_NOT_SUPPORTED'});const p=await f.ops.preview({operation:'edit',rootId:'user',path:'example.md',raw:skill,version:'v1'});f.change();await assert.rejects(f.ops.commit({previewId:p.previewId}),{code:'FS_STALE_VERSION'});await assert.rejects(f.ops.raw({rootId:'missing',path:'example.md'}));assert.equal(f.writes.length,0);});

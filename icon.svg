@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <title>Skill library — iridescent glass book</title>
+  <defs>
+    <linearGradient id="body" x1="43" y1="46" x2="213" y2="218" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00E5FA"/><stop offset=".34" stop-color="#37BDFA"/><stop offset=".61" stop-color="#A2A5FA"/><stop offset=".82" stop-color="#EAC8FA"/><stop offset="1" stop-color="#FFF5F5"/>
+    </linearGradient>
+    <radialGradient id="pearl" cx="0" cy="0" r="1" gradientTransform="translate(174 165) rotate(44) scale(96 75)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF1FF" stop-opacity=".92"/><stop offset="1" stop-color="#FFF1FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="edge" x1="38" y1="44" x2="218" y2="217" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A3FFFF"/><stop offset=".45" stop-color="#65BFFF"/><stop offset=".74" stop-color="#ECD3FF"/><stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="55" y1="70" x2="104" y2="162" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E6FFFF" stop-opacity=".78"/><stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glass" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="blur"/>
+      <feFlood flood-color="#7F9BFF" flood-opacity=".35"/><feComposite in2="blur" operator="in" result="glow"/>
+      <feOffset in="SourceAlpha" dx="3" dy="4" result="offset"/><feGaussianBlur in="offset" stdDeviation="5"/>
+      <feComposite in="SourceAlpha" operator="out" result="rim"/><feFlood flood-color="#F3FFFF" flood-opacity=".9"/><feComposite in2="rim" operator="in" result="light"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/><feMergeNode in="light"/></feMerge>
+    </filter>
+    <path id="book" d="M128 68C104 49 75 43 48 47Q33 49 33 65V184Q33 200 49 201C78 199 104 205 122 218Q128 222 134 218C152 205 178 199 207 201Q223 200 223 184V65Q223 49 208 47C181 43 152 49 128 68Z"/>
+  </defs>
+  <g filter="url(#glass)">
+    <use href="#book" fill="url(#body)"/><use href="#book" fill="url(#pearl)"/>
+    <use href="#book" stroke="url(#edge)" stroke-width="2.5"/>
+    <path d="M128 74V204" stroke="#7A8CCF" stroke-opacity=".35" stroke-width="8" stroke-linecap="round"/>
+    <path d="M54 69C75 68 95 73 109 82V161C93 153 73 149 54 150Z" fill="url(#shine)"/>
+    <path d="M151 151C163 146 179 143 197 145M151 173C165 168 181 167 197 168" stroke="white" stroke-opacity=".58" stroke-width="7" stroke-linecap="round"/>
+    <path d="M76 98Q79 88 82 98L86 111L99 115Q108 118 99 121L86 125L82 138Q79 147 76 138L72 125L59 121Q50 118 59 115L72 111Z" fill="#E8FFFF" fill-opacity=".72"/>
+  </g>
+</svg>

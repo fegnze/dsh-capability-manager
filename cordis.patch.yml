@@ -1,0 +1,3 @@
+- insert:
+    - id: dsh-capability-manager
+      name: "@fegnze/dsh-capability-manager"
